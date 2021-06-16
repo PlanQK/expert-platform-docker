@@ -1,105 +1,74 @@
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+# User Guide for applying the NISQ Analyzer on PlanQK Platform Data
 
-# Dockerized QuAntiL Environment
+This guidance guides you through the [QC Atlas UI](https://github.com/UST-QuAntiL/qc-atlas-ui) for applying the [NISQ Analyzer](https://github.com/UST-QuAntiL/nisq-analyzer) on given implementations of the PlanQK Platform for selecting suitable quantum computers.  
 
-Docker Compose file for running the entire QuAntiL environment provided by the [QC Atlas UI](https://github.com/UST-QuAntiL/qc-atlas-ui).  
-Thereby, the [QC Atlas](https://github.com/UST-QuAntiL/qc-atlas) builds the basic knowledge base.  
-Furthermore, different features, e.g. [NISQ Analyzer](https://github.com/UST-QuAntiL/nisq-analyzer), [Pattern Atlas](https://github.com/PatternAtlas/pattern-atlas-api), and [QProv](https://github.com/UST-QuAntiL/qprov), are supported on top of the QC Atlas.  
-These features and their related backend components are defined as feature sets.  
+### Prerequisites
++ Docker Engine - [Install Guide](https://docs.docker.com/engine/install/)
++ Docker Compose - [Install Guide](https://docs.docker.com/compose/install/)
++ Clone [quantil-docker repository](https://github.com/UST-QuAntiL/quantil-docker)
++ Required ports are listed [here](https://github.com/UST-QuAntiL/quantil-docker#readme)
 
-The defined feature sets are namely:  
-- `all` (runs all features)
-- `nisqAnalyzer`
-- `nisqAnalyzerCompilerComparison`
-- `patternAtlas`
-- `qprov`
+## Getting started using the NISQ Analyzer for the PlanQK Platform
+To use the NISQ Analyzer on the PlanQK platform content, currenly only Qiskit-based implementations are supported.
+Thus the _technology_ field is used to specify the used SDK, i.e., Qiskit, while the version field specifies the programming languages used, e.g., Qiskit or OpenQASM.
+Please note that currently only the first file on the platform is used by the NISQ Analyzer for analyzing and executing the implementation.
+A current limitation is that only fixed circuits, i.e., circuits that do not require input parameters, can be executed. The Shor implementation is such an example.
 
-A detailed documentation can be found [here](https://quantil.readthedocs.io/en/latest/).  
+### 1. Add Qiskit Credentials to docker-compose.override.yml
+1. Copy [docker-compose.nisq.analyzer.override.yml](docker-compose.nisq.analyzer.override.yml) file to `docker-compose.override.yml`.
+2. Insert your Qiskit token at `QPROV_IBMQ_TOKEN: 'your-qiskit-token-here'` in the new `docker-compose.override.yml`.
 
-The fastest way to get started is using [Docker Compose](https://docs.docker.com/compose/).  
+**Note:** Currently only quantum computers of IBMQ are supported.
 
-The base components QC Atlas, QC Atlas UI, LaTeX Renderer, and the databases without any of the named features run by default using:
-  ```shell
-  docker-compose pull
-  docker-compose up
-  ```
-For running certain feature sets on top of the base components, [Profiles](https://docs.docker.com/compose/profiles/) are used.  
-To start a certain feature set run:
-  ```shell
-  docker-compose --profile <name-of-feature-set> pull
-  docker-compose --profile <name-of-feature-set> up
-  ```
-  
-For running multiple feature sets, e.g. two sets, run:
-  ```shell
-  docker-compose --profile <name-of-feature-set-1> --profile <name-of-feature-set-2> pull
-  docker-compose --profile <name-of-feature-set-1> --profile <name-of-feature-set-2> up
-  ```
-  
-For running all feature sets, choose `--profile all`.
+### 2. Run QC Atlas UI and the NISQ Analyzer
+Open a console, navigate to the folder of the quantil-docker, and run the following commands:
 
+1. `docker-compose --profile nisqAnalyzer pull`
+2. `docker-compose build db`
+3. `docker-compose --profile nisqAnalyzer up`
 
-| QuAntiL Component | URL | GitHub | Docker Hub |
-|:------------------- |:--- |:------ |:---------- |
-| QC-Atlas-UI |<http://localhost:80> | [Link](https://github.com/UST-QuAntiL/qc-atlas-ui) | [Link](https://hub.docker.com/r/planqk/qc-atlas-ui) |
-| QC-Atlas |<http://localhost:6626/atlas> | [Link](https://github.com/UST-QuAntiL/qc-atlas) | [Link](https://hub.docker.com/r/planqk/atlas) |
-| Pattern-Atlas-API |<http://localhost:1977/patternpedia> | [Link](https://github.com/PatternAtlas/pattern-atlas-api) | [Link](https://hub.docker.com/r/patternpedia/patternrepo-api) |
-| NISQ-Analyzer |<http://localhost:5010/nisq-analyzer> | [Link](https://github.com/UST-QuAntiL/nisq-analyzer) | [Link](https://hub.docker.com/r/planqk/nisq-analyzer) |
-| Quantum-Transpiler-Frontend |<http://localhost:5011> | [Link](https://github.com/UST-QuAntiL/QuantumTranspiler) | [Link](https://hub.docker.com/r/planqk/quantum-transpiler-frontend) |
-| Quantum-Transpiler-Backend |<http://localhost:5012> | [Link](https://github.com/UST-QuAntiL/QuantumTranspiler) | [Link](https://hub.docker.com/r/planqk/quantum-transpiler-backend) |
-| Qiskit-Service |<http://localhost:5013> | [Link](https://github.com/UST-QuAntiL/qiskit-service) | [Link](https://hub.docker.com/r/planqk/qiskit-service) |
-| Forest-Service |<http://localhost:5014> | [Link](https://github.com/UST-QuAntiL/forest-service) | [Link](https://hub.docker.com/r/planqk/forest-service) |
-| Pytket-Service |<http://localhost:5015> | [Link](https://github.com/UST-QuAntiL/pytket-service) | [Link](https://hub.docker.com/r/planqk/pytket-service) |
-| Rigetti QVM |<http://localhost:5016> | [Link](https://github.com/rigetti/qvm) | [Link](https://hub.docker.com/r/rigetti/qvm) |
-| Rigetti Quilc |<http://localhost:5017> | [Link](https://github.com/rigetti/quilc) | [Link](https://hub.docker.com/r/rigetti/quilc) |
-| QProv |<http://localhost:5020/qprov> | [Link](https://github.com/UST-QuAntiL/qprov) | [Link](https://hub.docker.com/r/planqk/qprov) |
-| QProv-Collector-IBM |<http://localhost:5021> | [Link](https://github.com/UST-QuAntiL/qprov) | [Link](https://hub.docker.com/r/planqk/qprov-collector) |
-| Latex-Renderer |<http://localhost:5030> | [Link](https://github.com/UST-QuAntiL/latex-renderer) | [Link](https://hub.docker.com/repository/docker/planqk/latex-renderer) |
-| Redis |<http://localhost:5040> | [Link](https://github.com/redis/redis) | [Link](https://hub.docker.com/_/redis) |
-| Postgres-Multi DB | <tcp://localhost:5060> | [Link](https://github.com/lmm-git/docker-postgres-multi) | [Link](https://hub.docker.com/r/lmmdock/postgres-multi) |
-| Config-Server |<http://localhost:2379> | [Link](https://github.com/etcd-io/etcd) | [Link](https://quay.io/repository/coreos/etcd) |
+After a few seconds, the ecosystem is up and running and you can access it via the browser on <http://localhost:80>.
+The QC Atlas UI is visible.
 
-**Make sure following ports in your environment are free in order to start the QuAntiL environment properly:**
+### 3. Login to PlanQK Platform
+To login in to the platform, click the user button on the top right and insert your PlanQK platform username and password.
 
-* `80`
-* `1977`
-* `2379`
-* `5010`-`5017`
-* `5020`-`5021`
-* `5030`
-* `5040`
-* `5060`
-* `6626`
+<img width="1590" alt="platform-login" src="https://user-images.githubusercontent.com/23473511/122178127-983ce800-ce86-11eb-9514-f5beb4d62285.png">
 
-### Tips and Tricks
+Now, the list of algorithms available in the platform are displayed.
 
-```bash
-# Pull the latest images
-docker-compose pull
+### 4. Using the NISQ Analyzer for selecting suitable quantum computers for a specific implementation
 
-# Validate and view the resulting configuration
-docker-compose [-f <file> ...] config
+1. Navigate to the desired algorithm and click on it.
+2. In context of the algorithm, click on _Implementations_ and select the given implementation.
 
-# Start services in background
-docker-compose up -d
+<img width="1590" alt="implementations" src="https://user-images.githubusercontent.com/23473511/122180174-793f5580-ce88-11eb-88b1-a7094319a81e.png">
 
-# Shutdown services and remove container
-docker-compose down -v
+3. In context of the implementation, click on the _NISQ Analyzer_ tab.
 
-# Display useful logs
-docker-compose logs -f [--tail=1 <SERVICE_NAME>...]
-docker-compose logs -f qc-atlas db
-```
+<img width="1590" alt="implementation-NISQ-Analyzer" src="https://user-images.githubusercontent.com/23473511/122180990-37fb7580-ce89-11eb-9ccf-5a96557c3bf8.png">
 
-### Import Example Data
+4. To start the quantum computer selection, click on _New Analysis_, select the vendor and insert your Qiskit token. You can also enable/disable if simulators should be included. Then, click ok to start the analysis.
+5. Now a new analysis job is created. When the analysis job is finished a _Show analysis_ button occurs on the right side. While waiting, you can browse through the QC Atlas UI.
+6. When clicking on the _Show analysis_ button suitable quantum computers (and simulators) are listed.
 
-See [QuAntil documentation](https://ust-quantil.github.io/quantil-docs/developer-guide/docker/)
+<img width="1590" alt="analysis-result" src="https://user-images.githubusercontent.com/23473511/122182995-18654c80-ce8b-11eb-9044-be4f09ca3317.png">
+
+7. You can also execute the implementation on the suitable quantum computers (and simulators) by clicking the _Execute_ button. After clicking, the _Show result_ button occurs which expands the table row and displays status and result of the execution.
+8. When the execution is complete, the result is displayed.
+
+<img width="1590" alt="execution-result" src="https://user-images.githubusercontent.com/23473511/122183561-a2adb080-ce8b-11eb-94ac-c366dc8a0264.png">
+
+### 5. Stop the environment
+
+1. To stop the environment go to the console window with the docker-compose running, stop the process (e.g. control+shift+C for Mac).
+2. To remove all volumes run `docker-compose down -v`.
 
 ## Acknowledgements
 
  Current development is supported by the [Federal Ministry for Economic Affairs and Energy] as part of the [PlanQK] project (01MK20005N) and the DFG’s Excellence Initiative project [SimTech] (EXC 2075 - 390740016).
 
- ## Haftungsausschluss
+## Haftungsausschluss
 
  Dies ist ein Forschungsprototyp.
  Die Haftung für entgangenen Gewinn, Produktionsausfall, Betriebsunterbrechung, entgangene Nutzungen, Verlust von Daten und Informationen, Finanzierungsaufwendungen sowie sonstige Vermögens- und Folgeschäden ist, außer in Fällen von grober Fahrlässigkeit, Vorsatz und Personenschäden, ausgeschlossen.
