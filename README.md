@@ -1,4 +1,4 @@
-# User Guide to Applying the NISQ Analyzer on PlanQK Platform Data
+# User Guide to Run the NISQ Analyzer on PlanQK Platform Data
 
 This guidance guides you through the [QC Atlas UI](https://github.com/UST-QuAntiL/qc-atlas-ui) for applying
 the [NISQ Analyzer](https://github.com/UST-QuAntiL/nisq-analyzer) on given implementations of the PlanQK Platform for
