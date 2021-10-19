@@ -10,12 +10,12 @@ services:
     image: quantil-db
     environment:
       # specifies user:pw for each container
-      POSTGRES_USERS: 'planqk:planqk|nisq:nisq|patternpedia:patternpedia|qprov:qprov'
+      POSTGRES_USERS: 'planqk:planqk|nisq:nisq|patternatlas:patternatlas|qprov:qprov'
       # specifies db name for each container
-      POSTGRES_DATABASES: 'planqk:planqk|nisq:nisq|patternpedia:patternpedia|qprov:qprov'
+      POSTGRES_DATABASES: 'planqk:planqk|nisq:nisq|patternatlas:patternatlas|qprov:qprov'
       ATLAS_DB: planqk
       NISQ_DB: nisq
-      PATTERNPEDIA_DB: patternpedia
+      PATTERNATLAS_DB: patternatlas
       QPROV_DB: qprov
     #volumes:
       # use this volume to save the postgres data
@@ -36,10 +36,14 @@ services:
       QC_ATLAS_PORT: 6626
       PATTERN_ATLAS_HOST_NAME: localhost
       PATTERN_ATLAS_PORT: 1977
+      PATTERN_ATLAS_UI_HOST_NAME: localhost
+      PATTERN_ATLAS_UI_PORT: 1978
       NISQ_ANALYZER_HOST_NAME: localhost
       NISQ_ANALYZER_PORT: 5010
       QPROV_HOST_NAME: localhost
       QPROV_PORT: 5020
+      LATEX_RENDERER_HOST_NAME: localhost
+      LATEX_RENDERER_PORT: 5030
     ports:
       - '80:80'
     volumes:
@@ -59,19 +63,34 @@ services:
     networks:
       - default
   pattern-atlas-api:
-    image: patternpedia/patternrepo-api:latest
+    image: patternatlas/pattern-atlas-api:latest
     profiles: ["all", "patternAtlas"]
     environment:
       JDBC_DATABASE_URL: db
-      JDBC_DATABASE_NAME: patternpedia
-      JDBC_DATABASE_USERNAME: patternpedia
-      JDBC_DATABASE_PASSWORD: patternpedia
+      JDBC_DATABASE_NAME: patternatlas
+      JDBC_DATABASE_USERNAME: patternatlas
+      JDBC_DATABASE_PASSWORD: patternatlas
       JDBC_DATABASE_PORT: 5060
       API_PORT: 1977
     ports:
       - '1977:1977'
     networks:
       - default
+  pattern-atlas-ui:
+    image: patternatlas/pattern-atlas-ui:latest
+    profiles: [ "all", "patternAtlas" ]
+    depends_on:
+      - config-server
+    environment:
+      # because the requests are performed from the browser and not
+      # from the container itself we have to specify localhost here
+      # and **not** the container name
+      PATTERN_ATLAS_API_HOST_NAME: localhost
+      PATTERN_ATLAS_API_PORT: 1977
+      LATEX_RENDERER_HOST_NAME: localhost
+      LATEX_RENDERER_PORT: 5030
+    ports:
+      - "1978:80"
   nisq-analyzer:
     image: planqk/nisq-analyzer:latest
     profiles: ["all", "nisqAnalyzer", "nisqAnalyzerCompilerComparison"]
