@@ -6,6 +6,6 @@
     "nisqAnalyzerCompilerComparison": "true",
     "nisqAnalyzerQpuSelection": "true",
     "showSettings": "true",
-    "enableEditing": "false"
+    "enableEditing": "true"
   }
 }
